@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item name="text" type="id"></item>
+    <item name="arrow_up" type="id"></item>
+    <item name="arrow_down" type="id"></item>
+
+</resources>
