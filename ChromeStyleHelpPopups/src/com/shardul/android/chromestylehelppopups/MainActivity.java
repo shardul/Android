@@ -1,8 +1,10 @@
-package com.example.chromestylehelppopups;
+package com.shardul.android.chromestylehelppopups;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+
+import com.shardul.android.chromestylehelppopups.R;
 
 public class MainActivity extends Activity {
 

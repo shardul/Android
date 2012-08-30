@@ -1,4 +1,4 @@
-package com.example.chromestylehelppopups;
+package com.shardul.android.chromestylehelppopups;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -15,6 +15,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
+import com.shardul.android.chromestylehelppopups.R;
 
 public class ChromeHelpPopup {
 
