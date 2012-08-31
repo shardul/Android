@@ -1,10 +1,10 @@
 package com.shardul.android.soapservice.activities;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.FileOutputStream;
 import java.util.HashMap;
+import java.util.Properties;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -26,7 +26,17 @@ import com.shardul.globalspace.android.soapservice.model.SOAPResponseHelper;
 
 public class SoapIntentActivityActivity extends Activity {
 
-	private final static String SOAP_FEED = "soap_feed.xml";
+	private static final String PROP_NAMESPACE = "prop_namespace";
+	private static final String PROP_ACTION = "prop_action";
+	private static final String PROP_URL = "prop_url";
+	private static final String PROP_METHOD = "prop_method";
+	private static final String PROP_SOAP_PROPERTIES = "prop_properties";
+	private static final String PROP_SOAP_HEADERS = "prop_headers";
+
+	private final static String SOAP_FEED = Environment
+			.getExternalStorageDirectory().toString()
+			+ File.separator
+			+ "soap_feed.properties";
 
 	private static final int DIALOG_RESPONSE = 9961;
 	private static final int HEADERS = 99980;
@@ -35,12 +45,12 @@ public class SoapIntentActivityActivity extends Activity {
 	private int headerCount = 0;
 	private int propertiesCount = 0;
 
-	private EditText nameSpace;
-	private EditText action;
-	private EditText url;
-	private EditText method;
-	private ViewGroup properties;
-	private ViewGroup headers;
+	private EditText etNameSpace;
+	private EditText etAction;
+	private EditText etUrl;
+	private EditText etMethod;
+	private ViewGroup vgProperties;
+	private ViewGroup vgHeaders;
 	private ResponseReceiver responseReceiver;
 	private boolean isRegistered;
 
@@ -51,42 +61,59 @@ public class SoapIntentActivityActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		nameSpace = (EditText) findViewById(R.id.et_namespace);
-		action = (EditText) findViewById(R.id.et_action);
-		url = (EditText) findViewById(R.id.et_url);
-		method = (EditText) findViewById(R.id.et_method);
-		properties = (ViewGroup) findViewById(R.id.proerties);
-		headers = (ViewGroup) findViewById(R.id.headers);
+		etNameSpace = (EditText) findViewById(R.id.et_namespace);
+		etAction = (EditText) findViewById(R.id.et_action);
+		etUrl = (EditText) findViewById(R.id.et_url);
+		etMethod = (EditText) findViewById(R.id.et_method);
+		vgProperties = (ViewGroup) findViewById(R.id.proerties);
+		vgHeaders = (ViewGroup) findViewById(R.id.headers);
 
 		responseReceiver = new ResponseReceiver();
 
-		File file = new File(Environment.getExternalStorageDirectory()
-				.toString() + File.separator + SOAP_FEED);
+		Properties properties = new Properties();
+		try {
+			properties.load(new FileInputStream(SOAP_FEED));
+			String nameSpace = (String) properties.get(PROP_NAMESPACE);
+			String action = (String) properties.get(PROP_ACTION);
+			String url = (String) properties.get(PROP_URL);
+			String method = (String) properties.get(PROP_METHOD);
 
-		if (file.exists()) {
-			try {
-				BufferedReader reader = new BufferedReader(
-						new InputStreamReader(new FileInputStream(file)));
+			etNameSpace.setText(nameSpace);
+			etAction.setText(action);
+			etMethod.setText(method);
+			etUrl.setText(url);
 
-				String line = "";
-				StringBuffer feedBuffer = new StringBuffer();
+			SOAPNameValuePair[] props = getNameValuesFromStoredString(properties
+					.getProperty(PROP_SOAP_PROPERTIES));
 
-				while ((line = reader.readLine()) != null) {
-					feedBuffer.append(line);
-				}
-
+			for (SOAPNameValuePair soapNameValuePair : props) {
 				addProperties(null);
-
-				EditText view = (EditText) (properties.findViewById(PROPERTIES))
+				View nameValueView = vgProperties.findViewById(PROPERTIES
+						+ (propertiesCount - 1));
+				EditText name = (EditText) nameValueView
+						.findViewById(R.id.name);
+				EditText value = (EditText) nameValueView
 						.findViewById(R.id.value);
-				view.setText(feedBuffer.toString());
-
-				Toast.makeText(this, SOAP_FEED + " feeded!", Toast.LENGTH_LONG)
-						.show();
-
-			} catch (Exception e) {
-				e.printStackTrace();
+				name.setText(soapNameValuePair.getName());
+				value.setText(soapNameValuePair.getValue());
 			}
+
+			SOAPNameValuePair[] heads = getNameValuesFromStoredString(properties
+					.getProperty(PROP_SOAP_HEADERS));
+			for (SOAPNameValuePair soapNameValuePair : heads) {
+				addHeaders(null);
+				View nameValueView = vgHeaders.findViewById(HEADERS
+						+ (headerCount - 1));
+				EditText name = (EditText) nameValueView
+						.findViewById(R.id.name);
+				EditText value = (EditText) nameValueView
+						.findViewById(R.id.value);
+				name.setText(soapNameValuePair.getName());
+				value.setText(soapNameValuePair.getValue());
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 	}
@@ -130,7 +157,7 @@ public class SoapIntentActivityActivity extends Activity {
 				null);
 		nameValueView.setId(HEADERS + headerCount);
 
-		headers.addView(nameValueView);
+		vgHeaders.addView(nameValueView);
 
 		headerCount++;
 	}
@@ -141,7 +168,7 @@ public class SoapIntentActivityActivity extends Activity {
 				null);
 		nameValueView.setId(PROPERTIES + propertiesCount);
 
-		properties.addView(nameValueView);
+		vgProperties.addView(nameValueView);
 
 		propertiesCount++;
 	}
@@ -149,10 +176,19 @@ public class SoapIntentActivityActivity extends Activity {
 	public void doIt(View view) {
 		isRegistered = true;
 
-		SOAPRequestHelper soapRequestHelper = new SOAPRequestHelper(nameSpace
-				.getText().toString().trim(), action.getText().toString()
-				.trim(), method.getText().toString().trim(), url.getText()
-				.toString().trim());
+		final String namespace = etNameSpace.getText().toString().trim();
+		final String action = etAction.getText().toString().trim();
+		final String methodName = etMethod.getText().toString().trim();
+		final String url = etUrl.getText().toString().trim();
+
+		SOAPRequestHelper soapRequestHelper = new SOAPRequestHelper(namespace,
+				action, methodName, url);
+
+		Properties properties = new Properties();
+		properties.setProperty(PROP_NAMESPACE, namespace);
+		properties.setProperty(PROP_ACTION, action);
+		properties.setProperty(PROP_METHOD, methodName);
+		properties.setProperty(PROP_URL, url);
 
 		if (propertiesCount > 0) {
 
@@ -160,7 +196,7 @@ public class SoapIntentActivityActivity extends Activity {
 
 			for (int i = 0; i < propertiesCount; i++) {
 
-				View nameValueView = properties.findViewById(PROPERTIES + i);
+				View nameValueView = vgProperties.findViewById(PROPERTIES + i);
 
 				EditText name = (EditText) nameValueView
 						.findViewById(R.id.name);
@@ -172,6 +208,9 @@ public class SoapIntentActivityActivity extends Activity {
 
 			}
 			soapRequestHelper.setProperties(props);
+			properties.setProperty(PROP_SOAP_PROPERTIES,
+					getNameValueStoreString(props));
+
 		}
 
 		if (headerCount > 0) {
@@ -180,7 +219,7 @@ public class SoapIntentActivityActivity extends Activity {
 
 			for (int i = 0; i < headerCount; i++) {
 
-				View nameValueView = headers.findViewById(PROPERTIES + i);
+				View nameValueView = vgHeaders.findViewById(HEADERS + i);
 
 				EditText name = (EditText) nameValueView
 						.findViewById(R.id.name);
@@ -192,6 +231,14 @@ public class SoapIntentActivityActivity extends Activity {
 
 			}
 			soapRequestHelper.setHeaders(heads);
+			properties.setProperty(PROP_SOAP_HEADERS,
+					getNameValueStoreString(heads));
+		}
+
+		try {
+			properties.store(new FileOutputStream(SOAP_FEED), null);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		soapRequestHelper.performSOAPRequest(this, responseReceiver);
@@ -213,6 +260,33 @@ public class SoapIntentActivityActivity extends Activity {
 						Toast.LENGTH_LONG).show();
 			}
 		}
+
+	}
+
+	private String getNameValueStoreString(SOAPNameValuePair[] nameValuesPairs) {
+		StringBuilder builder = new StringBuilder();
+
+		for (SOAPNameValuePair namevaluepair : nameValuesPairs) {
+			if (namevaluepair.getName().length() > 0)
+				builder.append(namevaluepair.toString() + ",");
+		}
+
+		return builder.toString();
+
+	}
+
+	private SOAPNameValuePair[] getNameValuesFromStoredString(
+			String storedString) {
+		String[] nameValues = storedString.split(",");
+		SOAPNameValuePair[] result = new SOAPNameValuePair[nameValues.length];
+
+		for (int i = 0; i < result.length; i++) {
+			String nameValue = nameValues[i];
+			result[i] = new SOAPNameValuePair(nameValue.split(":")[0],
+					nameValue.split("|")[1]);
+		}
+
+		return result;
 
 	}
 

@@ -30,7 +30,7 @@ public class SOAPNameValuePair implements Serializable{
 	
 	@Override
 	public String toString() {
-		return getName()+":"+getValue();
+		return getName()+"|"+getValue();
 	}
 	
 
