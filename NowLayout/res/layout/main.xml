@@ -1,0 +1,54 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true" >
+
+    <com.shardul.nowlayout.NowLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#e3e3e3"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/txtView"
+            style="@style/nowCardStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hello_world"
+            tools:context=".MainActivity" />
+
+        <TextView
+            android:id="@+id/txtView"
+            style="@style/nowCardStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hello_world"
+            tools:context=".MainActivity" />
+
+        <TextView
+            android:id="@+id/txtView"
+            style="@style/nowCardStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hello_world"
+            tools:context=".MainActivity" />
+
+        <TextView
+            android:id="@+id/txtView"
+            style="@style/nowCardStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hello_world"
+            tools:context=".MainActivity" />
+
+        <TextView
+            android:id="@+id/txtView"
+            style="@style/nowCardStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hello_world"
+            tools:context=".MainActivity" />
+    </com.shardul.nowlayout.NowLayout>
+
+</ScrollView>

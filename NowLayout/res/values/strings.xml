@@ -1,0 +1,7 @@
+<resources>
+
+    <string name="app_name">NowLayout</string>
+    <string name="hello_world">Hellow World!</string>
+    <string name="title_activity_main">MainActivity</string>
+
+</resources>
