@@ -1,0 +1,11 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@color/list_selector_normal" android:state_window_focused="false"/>
+    <item android:drawable="@color/list_selector_disabled" android:state_enabled="false" android:state_focused="true" android:state_pressed="true"/>
+    <item android:drawable="@color/list_selector_disabled" android:state_enabled="false" android:state_focused="true"/>
+    <item android:drawable="@color/list_selector_pressed" android:state_focused="true" android:state_pressed="true"/>
+    <item android:drawable="@color/list_selector_pressed" android:state_focused="false" android:state_pressed="true"/>
+    <item android:drawable="@color/list_selector_focused" android:state_focused="true"/>
+    <item android:drawable="@color/list_selector_normal"/>
+
+</selector>

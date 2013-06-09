@@ -1,0 +1,7 @@
+<resources>
+
+    <color name="list_selector_normal">#fff</color>
+    <color name="list_selector_pressed">#ff4cbee7</color>
+    <color name="list_selector_focused">#504cbee7</color>
+    <color name="list_selector_disabled">#50ffffff</color>
+</resources>
